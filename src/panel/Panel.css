@@ -1,0 +1,671 @@
+/* ================= 对话面板 ================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.panel-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* Android 15+ 强制 edge-to-edge：留出状态栏与手势条安全区（桌面端 env 恒为 0，无影响） */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #faf7f0;
+  color: #4a3b20;
+}
+
+/* ---- 头部 ---- */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #fffdf6, #faf5e6);
+  border-bottom: 1px solid #eee3c4;
+  flex: none;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.panel-avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  background: radial-gradient(circle at 35% 30%, #fff2b8, #ffd23e);
+  border: 1.5px solid #e8a400;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(200, 150, 0, 0.25);
+}
+
+.panel-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.panel-mood {
+  font-size: 11px;
+  color: #9a8a63;
+  margin-top: 1px;
+}
+
+.panel-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.panel-tabs button {
+  border: 1px solid #e5d9bc;
+  background: #fff;
+  color: #8a7b5e;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.panel-tabs button:hover {
+  border-color: #f0c93c;
+  color: #6b5a2e;
+}
+
+.panel-tabs button.on {
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  border-color: #e8a400;
+  color: #5b4a10;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(220, 170, 0, 0.3);
+}
+
+/* ---- 未配置提示 ---- */
+.panel-warn {
+  flex: none;
+  margin: 10px 14px 0;
+  padding: 9px 12px;
+  background: #fff4e0;
+  border: 1px solid #f3d9a4;
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: #93691a;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.panel-warn:hover {
+  background: #ffedd0;
+}
+
+/* ---- 消息列表 ---- */
+.panel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-list::-webkit-scrollbar-thumb {
+  background: #e6d8b4;
+  border-radius: 3px;
+}
+
+.msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: msg-in 0.22s ease;
+}
+
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg-user {
+  justify-content: flex-end;
+}
+
+.msg-avatar {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  background: radial-gradient(circle at 35% 30%, #fff2b8, #ffd23e);
+  border: 1.5px solid #e8a400;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+
+.msg-bubble {
+  max-width: 76%;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 14px;
+  position: relative;
+}
+
+/* AI 回复右上角的一键复制按钮：悬停整条消息时出现 */
+.msg-copy {
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  padding: 2px 8px;
+  border: 1px solid #e5e0d4;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #8a8f98;
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.msg:hover .msg-copy,
+.msg-copy:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.msg-copy:active {
+  transform: scale(0.94);
+}
+
+.msg-user .msg-bubble {
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  border: 1px solid #eab308;
+  border-bottom-right-radius: 4px;
+  color: #4a3a08;
+}
+
+.msg-assistant .msg-bubble {
+  background: #ffffff;
+  border: 1px solid #eee3c4;
+  border-bottom-left-radius: 4px;
+  color: #4a3b20;
+  box-shadow: 0 1px 4px rgba(120, 100, 40, 0.06);
+}
+
+/* 思考点点 */
+.msg-dots {
+  display: inline-flex;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.msg-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c9a227;
+  animation: dot-bounce 1s ease-in-out infinite;
+}
+
+.msg-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.msg-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dot-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* 流式光标 */
+.msg-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 13px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: #c9a227;
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* 空状态 */
+.panel-empty {
+  margin: auto;
+  text-align: center;
+  color: #b0a276;
+}
+
+.panel-empty-emoji {
+  font-size: 46px;
+  filter: drop-shadow(0 4px 8px rgba(200, 170, 60, 0.3));
+  animation: empty-float 2.6s ease-in-out infinite;
+}
+
+@keyframes empty-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.panel-empty-title {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8a7b5e;
+}
+
+.panel-empty-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ---- 输入区 ---- */
+.panel-input {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 14px 6px;
+  border-top: 1px solid #eee3c4;
+  background: #faf5e6;
+}
+
+.panel-input textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #e5d9bc;
+  border-radius: 10px;
+  padding: 8px 11px;
+  font: 13.5px/1.5 "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #4a3b20;
+  background: #fff;
+  outline: none;
+  max-height: 120px;
+  transition: border-color 0.15s ease;
+}
+
+.panel-input textarea:focus {
+  border-color: #f0c93c;
+  box-shadow: 0 0 0 3px rgba(240, 201, 60, 0.18);
+}
+
+.panel-send {
+  flex: none;
+  border: 1px solid #e8a400;
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  color: #5b4a10;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.panel-send:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(220, 170, 0, 0.35);
+}
+
+.panel-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.panel-footbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 14px 8px;
+  font-size: 11px;
+  color: #b0a276;
+  background: #faf5e6;
+}
+
+.panel-error {
+  color: #c2543a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-clear {
+  border: none;
+  background: none;
+  color: #b08a4a;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.panel-clear:hover {
+  color: #c2543a;
+  text-decoration: underline;
+}
+
+/* ---- 设置 ---- */
+.panel-settings {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-settings::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-settings::-webkit-scrollbar-thumb {
+  background: #e6d8b4;
+  border-radius: 3px;
+}
+
+.panel-settings section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.panel-settings label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a7b5e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-settings input,
+.panel-settings textarea {
+  border: 1px solid #e5d9bc;
+  border-radius: 10px;
+  padding: 8px 11px;
+  font: 13px/1.5 "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #4a3b20;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+
+.panel-settings input:focus,
+.panel-settings textarea:focus {
+  border-color: #f0c93c;
+  box-shadow: 0 0 0 3px rgba(240, 201, 60, 0.18);
+}
+
+.panel-settings .slider {
+  padding: 0;
+  height: 6px;
+  accent-color: #f0c93c;
+  cursor: pointer;
+}
+
+.preset-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.preset-row button {
+  border: 1px solid #e5d9bc;
+  background: #fff;
+  color: #8a7b5e;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-row button.on {
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  border-color: #e8a400;
+  color: #5b4a10;
+  font-weight: 600;
+}
+
+.model-row {
+  display: flex;
+  gap: 8px;
+  position: relative;
+}
+
+.model-row input {
+  flex: 1;
+}
+
+.model-arrow {
+  flex: none;
+  border: 1px solid #e5d9bc;
+  background: #fff;
+  color: #8a7b5e;
+  border-radius: 10px;
+  width: 32px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.model-arrow:hover:not(:disabled) {
+  border-color: #f0c93c;
+  color: #5b4a10;
+}
+
+.model-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.model-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #e5d9bc;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(90, 70, 20, 0.14);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.model-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #4a3b20;
+  font: 13px/1.5 "PingFang SC", "Microsoft YaHei", sans-serif;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.model-list button:hover {
+  background: #fdf3d0;
+}
+
+.model-list button.on {
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  color: #5b4a10;
+  font-weight: 600;
+}
+
+.panel-btn {
+  flex: none;
+  border: 1px solid #e8a400;
+  background: linear-gradient(180deg, #ffe879, #ffd23e);
+  color: #5b4a10;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.panel-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.panel-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.hint {
+  font-size: 11.5px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.hint.ok {
+  color: #4d9a4d;
+}
+
+.hint.err {
+  color: #c2543a;
+}
+
+.persona-label .link {
+  border: none;
+  background: none;
+  color: #b08a4a;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.persona-label .link:hover {
+  text-decoration: underline;
+}
+
+.saved-at {
+  margin-top: auto;
+  text-align: center;
+  font-size: 11px;
+  color: #b0a276;
+}
+
+/* ================= 关于说明 ================= */
+.about-note {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #8f8468;
+  word-break: break-all;
+}
+
+.about-note a {
+  color: #b08a4a;
+  text-decoration: none;
+}
+
+.about-note a:hover {
+  text-decoration: underline;
+}
+
+/* ================= 番茄钟状态 ================= */
+.pomo-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #fdeee6;
+  color: #b03a1e;
+  font: 700 12.5px/1 "Consolas", "PingFang SC", "Microsoft YaHei", monospace;
+  letter-spacing: 1px;
+}
+
+.pomo-status.break {
+  background: #e7f5ec;
+  color: #1f7a44;
+}
+
+/* ================= 番茄钟时长输入 ================= */
+.pomo-dur {
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.pomo-dur-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pomo-dur-item input {
+  width: 54px;
+  padding: 5px 4px;
+  border: 1px solid #e5e0d4;
+  border-radius: 7px;
+  background: #fffdf8;
+  font: 700 12.5px/1 "Consolas", "PingFang SC", "Microsoft YaHei", monospace;
+  text-align: center;
+  outline: none;
+}
+
+.pomo-dur-item input:focus {
+  border-color: #e8965a;
+}

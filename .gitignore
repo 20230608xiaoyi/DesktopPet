@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Tauri build artifacts
+src-tauri/target
+src-tauri/gen/android
+src-tauri/gen/apple
+src-tauri/plugins/*/android/build
+src-tauri/plugins/*/android/.tauri
+src-tauri/plugins/*/android/.gradle
+src-tauri/plugins/*/android/local.properties
+
+# Packaged outputs / installers
+*.apk
+*.idsig
+*.aab
+*.msi
+*.exe
+.nsis
+.nsis-build
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

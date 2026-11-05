@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "mobile",
+  "description": "移动端窗口权限（Android 悬浮桌宠）",
+  "windows": ["main", "panel"],
+  "platforms": ["android", "iOS"],
+  "permissions": [
+      "core:default",
+      "opener:default",
+      "notification:default",
+      "petfloat:default",
+      "petfloat:allow-start",
+      "petfloat:allow-stop",
+      "petfloat:allow-is-running",
+      "petfloat:allow-open-overlay-settings"
+    ]
+}
