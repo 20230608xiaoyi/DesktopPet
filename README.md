@@ -141,3 +141,7 @@ npm run tauri android build
 - 久坐检测依赖 `GetLastInputInfo`，仅 Windows 生效；Android 为固定间隔提醒
 - 本地语音兜底（PowerShell SAPI）仅 Windows 可用，macOS / Linux 依赖在线语音
 - 在线语音需要联网，首次会拉取音色列表，之后离线复用缓存
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE) 开源，可自由使用、修改、分发与商用，请保留版权声明。

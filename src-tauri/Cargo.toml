@@ -3,6 +3,7 @@ name = "desktop-pet"
 version = "0.4.0"
 description = "桌宠 AI 智伴 · 貔貅皮皮"
 authors = ["you"]
+license = "MIT"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
